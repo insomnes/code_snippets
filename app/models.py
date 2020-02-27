@@ -1,10 +1,16 @@
-from enum import Enum
-from pydantic import BaseModel
-from pygments.lexers import get_all_lexers
+from pydantic import BaseModel, EmailStr, Field
+from typing import List
 
 
-PYGMENTS_LEXERS = [lexer for lexer in get_all_lexers() if lexer[1]]
-PygmentsLexersEnum = Enum("PygmentsLexersEnum", {l: l for l in PYGMENTS_LEXERS})
+class MongoObjectID:
+
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, value):
+        return str(value)
 
 
 class SnippetBase(BaseModel):
@@ -20,17 +26,28 @@ class Snippet(SnippetBase):
 
 class UserBase(BaseModel):
     username: str
-    email: str
+    email: EmailStr
+    is_admin: bool = False
+    is_active: bool = True
+
+    snippets: List[Snippet] = None
 
 
 class UserCreate(UserBase):
     password: str
 
 
+class UserInDBCreate(UserBase):
+    hashed_password: str
+
+
+class UserInDB(UserInDBCreate):
+    _id: MongoObjectID
+
+
 class User(UserBase):
-    id: int
-    is_active: bool
-    admin: bool
+    _id: MongoObjectID
 
     class Config:
         orm_mode = True
+
