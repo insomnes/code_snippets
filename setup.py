@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='code_snippets',
     version='',
-    packages=['sql'],
+    packages=['app'],
     url='',
     license='',
     author='insomnes',

@@ -1,0 +1,15 @@
+version: '3'
+services:
+  mongo:
+    image: "mongo"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    ports:
+      - "27017:27017"
+
+#  snippets:
+#    build: .
+#    restart: on-failure
+#    ports:
+#      - "8000:80"
