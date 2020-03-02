@@ -1,4 +1,3 @@
-import re
 from datetime import datetime
 from enum import Enum
 from pydantic import BaseModel, EmailStr, Field
@@ -44,41 +43,26 @@ class PydanticObjectIdString(BsonObjectId):
 ############
 LANGUAGES = [lexer[1][0] for lexer in get_all_lexers() if lexer[1]]
 LanguagesEnum = Enum("LanguagesEnum", {s: s for s in LANGUAGES})
-SNIPPET_DEFAULT_TITLE = "Code snippet"
 
 
-class SnippetBase(BaseModel):
-    title: str = SNIPPET_DEFAULT_TITLE
-    description: str = None
+class Snippet(BaseModel):
     code: str
-    code_language: LanguagesEnum = None
-
-
-class SnippetCreate(SnippetBase):
-    pass
-
-
-class SnippetDB(SnippetBase):
-    id: PydanticObjectId = Field(..., alias="_id")
-    owner_id: PydanticObjectId = Field(..., alias="_id")
-    owner_username: str
+    code_language: LanguagesEnum
     created: datetime
-    last_modified: datetime
+    edited: datetime
+    title: str = None
+    description: str = None
+    private: str = False
 
-
-class Snippet(SnippetDB):
     class Config:
         orm_mode = True
 
 
-#########
-# USERS #
-#########
 class UserBase(BaseModel):
     username: str
     email: EmailStr
-    is_admin: bool = False
-    is_active: bool = True
+    admin: bool = False
+    inactive: bool = False
 
 
 class UserCreate(UserBase):
@@ -88,7 +72,7 @@ class UserCreate(UserBase):
 class UserDBBase(UserBase):
     created: datetime
     edited: datetime
-    snippets_ids: List[str] = []
+    snippets: List[Snippet] = []
 
 
 class UserDBSecret(UserDBBase):

@@ -1,10 +1,8 @@
 from bson.objectid import ObjectId
-from functools import wraps
 from pymongo.results import DeleteResult, InsertOneResult, UpdateResult
-from typing import Any, Callable, Dict, Union
+from typing import Any, Dict
 
 from app.database import users
-from app.models import UserDBBase, User, UserUpdate
 
 DBData = Dict[str, Any]
 

@@ -2,7 +2,7 @@ import pymongo
 import pymongo.errors
 from datetime import datetime
 from enum import Enum
-from fastapi import FastAPI, Body, Depends, HTTPException, Path, Request
+from fastapi import FastAPI, Depends, HTTPException, Path, Request
 from fastapi.responses import JSONResponse
 from starlette import status
 from starlette.responses import HTMLResponse
@@ -32,7 +32,7 @@ APP_VERSION = "0.1"
 
 
 TEST_CODE = 'print("Hello world!")'
-
+TEST_TITLE = 'Python "Hello world!" example'
 
 app = FastAPI(
     title=APP_TITLE,
@@ -79,6 +79,10 @@ async def db_startup():
         [("username", pymongo.ASCENDING)],
         unique=True
     )
+    await users.create_index(
+        [("email", pymongo.ASCENDING)],
+        unique=True
+    )
 
 
 @app.on_event("shutdown")
@@ -98,7 +102,7 @@ async def test(display: DisplayParameters = Depends()):
     Return test
     """
     lexer = get_lexer_by_name("python")
-    options = {'title': 'Python "Hello world!" example'}
+    options = {'title': TEST_TITLE}
     formatter = HtmlFormatter(linenos=display.linenos, style=display.style, full=True, **options)
     hl_code = highlight(TEST_CODE, lexer, formatter)
     return hl_code
@@ -140,7 +144,7 @@ async def create_user(user: UserCreate):
         hashed_password=hashed_password,
         **user.dict(exclude={'password'})
     )
-    result = await crud.create_user(user_in_db.dict())
+    result = await crud.create_user(user_in_db.dict(exclude_defaults=True))
 
     new_user = user.dict()
     new_user.update({
