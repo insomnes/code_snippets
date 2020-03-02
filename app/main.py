@@ -30,9 +30,8 @@ APP_TITLE = "Code snippets"
 APP_DESCRIPTION = "Code snippets storage"
 APP_VERSION = "0.1"
 
-ME = "main.py"
-ME_SECOND_CHANCE = "app/main.py"
-test_code = ""
+
+TEST_CODE = 'print("Hello world!")'
 
 
 app = FastAPI(
@@ -82,24 +81,6 @@ async def db_startup():
     )
 
 
-@app.on_event("startup")
-def read_my_code():
-    global ME
-    global test_code
-
-    try:
-        with open(ME, "r") as f:
-            test_code = f.read()
-    except IOError:
-        pass
-    try:
-        ME = ME_SECOND_CHANCE
-        with open(ME, "r") as f:
-            test_code = f.read()
-    except IOError:
-        test_code = 'print("Hello world!")'
-
-
 @app.on_event("shutdown")
 async def db_shutdown():
     await client.close()
@@ -117,12 +98,9 @@ async def test(display: DisplayParameters = Depends()):
     Return test
     """
     lexer = get_lexer_by_name("python")
-    if test_code != 'print("Hello world!")':
-        options = {'title': 'Snippets main.py code'}
-    else:
-        options = {'title': 'Python "Hello world!" example'}
+    options = {'title': 'Python "Hello world!" example'}
     formatter = HtmlFormatter(linenos=display.linenos, style=display.style, full=True, **options)
-    hl_code = highlight(test_code, lexer, formatter)
+    hl_code = highlight(TEST_CODE, lexer, formatter)
     return hl_code
 
 
