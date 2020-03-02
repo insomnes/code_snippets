@@ -10,5 +10,5 @@ URI = f"mongodb://{USER}:{PASSWORD}@{HOST}:{PORT}"
 
 client = AsyncIOMotorClient(URI)
 db = client.snippets
-users: Collection = db.users
+users_coll: Collection = db.users
 

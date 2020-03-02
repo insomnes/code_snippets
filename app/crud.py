@@ -2,7 +2,7 @@ from bson.objectid import ObjectId
 from pymongo.results import DeleteResult, InsertOneResult, UpdateResult
 from typing import Any, Dict
 
-from app.database import users
+from app.database import users_coll
 
 DBData = Dict[str, Any]
 
@@ -22,18 +22,18 @@ async def get_user(user_id: ObjectId):
     query = {
         '_id': user_id
     }
-    return await users.find_one(query)
+    return await users_coll.find_one(query)
 
 
 async def create_user(user_data: DBData) -> InsertOneResult:
-    return await users.insert_one(user_data)
+    return await users_coll.insert_one(user_data)
 
 
 async def delete_user(user_id: ObjectId) -> DeleteResult:
     query = {
         '_id': user_id
     }
-    return await users.delete_one(query)
+    return await users_coll.delete_one(query)
 
 
 async def update_user(user_id: ObjectId, update_data: DBData) -> UpdateResult:
@@ -43,10 +43,10 @@ async def update_user(user_id: ObjectId, update_data: DBData) -> UpdateResult:
         "$currentDate": {"edited": True}
     }
 
-    return await users.update_one(query_filter, query)
+    return await users_coll.update_one(query_filter, query)
 
 
 async def get_users(skip: int = 0, limit: int = 100):
-    cursor = users.find({}).skip(skip).limit(limit)
+    cursor = users_coll.find({}).skip(skip).limit(limit)
     return await cursor.to_list(limit)
 

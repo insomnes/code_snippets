@@ -15,7 +15,7 @@ from pygments.lexers import get_all_lexers, get_lexer_by_name
 from pygments.styles import get_all_styles
 
 from app import crud
-from app.database import client, users
+from app.database import client, users_coll
 from app.models import UserCreate, UserDBSecret, UserUpdate, User, PydanticObjectIdString
 from app.security import get_password_hash
 
@@ -75,11 +75,11 @@ async def duplicate_key_error_handler(request: Request, exc: pymongo.errors.Dupl
 
 @app.on_event("startup")
 async def db_startup():
-    await users.create_index(
+    await users_coll.create_index(
         [("username", pymongo.ASCENDING)],
         unique=True
     )
-    await users.create_index(
+    await users_coll.create_index(
         [("email", pymongo.ASCENDING)],
         unique=True
     )
